@@ -1,0 +1,62 @@
+name: Bug report
+description: Report incorrect behaviour in the API
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not use this form for security vulnerabilities.** Report those privately —
+        see [SECURITY.md](https://github.com/tokenzyme/tokenzyme-core/blob/main/SECURITY.md).
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the incorrect behaviour and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: The GraphQL operation or HTTP request, with variables.
+      render: graphql
+    validations:
+      required: true
+
+  - type: textarea
+    id: response
+    attributes:
+      label: Response received
+      render: json
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the API?
+      options:
+        - GraphQL — tokens
+        - GraphQL — trades
+        - GraphQL — comments
+        - GraphQL — accounts / authentication
+        - GraphQL — price
+        - REST — image upload
+        - WebSocket
+        - Startup / configuration
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant output. Set LOG_LEVEL=debug, or LOG_PRISMA=true for query-level detail.
+      render: shell
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit or version
+      placeholder: 'e.g. main @ a1b2c3d'

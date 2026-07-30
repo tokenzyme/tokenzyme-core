@@ -1,0 +1,16 @@
+enum SignatureMessageType {
+  SIGN_IN
+}
+
+model SignatureMessage {
+  id             String               @id @default(nanoid(15)) @map("id") @db.VarChar(15)
+  accountAddress String               @map("account_id") @db.VarChar(42)
+  type           SignatureMessageType @map("type")
+  message        String               @map("message") @db.VarChar(255)
+  createdAt      DateTime             @default(now()) @map("created_at")
+  expiredAt      DateTime             @map("expired_at")
+
+  account Account @relation(fields: [accountAddress], references: [address])
+
+  @@map("signature_messages")
+}

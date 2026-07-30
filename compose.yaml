@@ -1,0 +1,55 @@
+# Reads values from the .env file next to this one. See .env.template.
+#
+# The "tokenzyme" network is shared with tokenzyme-indexer and tokenzyme-app, and is
+# declared external so the three stacks can talk to each other. Create it once:
+#
+#   docker network create tokenzyme
+
+networks:
+  tokenzyme:
+    external: true
+
+volumes:
+  postgres-data:
+
+services:
+  tokenzyme-postgres:
+    image: postgres:17.5
+    container_name: tokenzyme-postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - tokenzyme
+    environment:
+      # Override in .env before exposing this beyond localhost.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+
+  tokenzyme-core:
+    build: .
+    container_name: tokenzyme-core
+    restart: always
+    depends_on:
+      - tokenzyme-postgres
+    ports:
+      - 3000:3000
+    networks:
+      - tokenzyme
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      LOG_LEVEL: ${LOG_LEVEL}
+      LOG_PRISMA: ${LOG_PRISMA}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      DB_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@tokenzyme-postgres:5432/tokenzyme?schema=tokenzyme
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      STORAGE_BUCKET: ${STORAGE_BUCKET}
+      STORAGE_REGION: ${STORAGE_REGION}
+      STORAGE_ENDPOINT: ${STORAGE_ENDPOINT}
+      STORAGE_CDN_URL: ${STORAGE_CDN_URL}
+      STORAGE_ACCESS_KEY: ${STORAGE_ACCESS_KEY}
+      STORAGE_SECRET_KEY: ${STORAGE_SECRET_KEY}
+      PRICE_FEED_ADDRESS: ${PRICE_FEED_ADDRESS}
+      RPC_URL: ${RPC_URL}

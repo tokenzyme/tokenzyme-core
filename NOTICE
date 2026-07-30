@@ -1,0 +1,52 @@
+Tokenzyme Core
+Copyright 2025 Sandro Simas
+
+This product includes software developed as part of the Tokenzyme project
+(https://github.com/tokenzyme).
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+--------------------------------------------------------------------------------
+
+"Tokenzyme", the Tokenzyme name, and the Tokenzyme logo are not licensed under
+the Apache License 2.0. See section 6 of the License and the Trademarks section
+of the README.
+
+--------------------------------------------------------------------------------
+
+Generated code committed to this repository:
+
+  src/generated/prisma     Prisma Client, generated from prisma/schema.prisma.
+                           Prisma is licensed under the Apache License 2.0.
+
+  src/generated/typechain  TypeChain bindings for the Tokenzyme contracts,
+                           generated in the tokenzyme-contracts repository and
+                           copied here. Covered by that repository's MIT license.
+
+--------------------------------------------------------------------------------
+
+Third-party dependencies are consumed from npm and are not vendored into this
+repository. Their licenses apply as published. Principal dependencies:
+
+  @nestjs/*        NestJS framework
+  @apollo/server   GraphQL server
+  fastify          HTTP server
+  prisma           ORM and migration tooling
+  ethers           Ethereum client library
+  socket.io        WebSocket transport
+  @aws-sdk/*       S3-compatible object storage client
+  sharp            Image processing
+  pino             Logging
+
+Review each package's terms before vendoring them, bundling them into a
+distributed artifact, or shipping a container image.

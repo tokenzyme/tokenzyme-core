@@ -1,0 +1,12 @@
+model Account {
+  address   String    @id @map("id") @db.VarChar(42)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  comments          Comment[]
+  signatureMessages SignatureMessage[]
+  tokens            Token[]
+  trades            Trade[]
+
+  @@map("accounts")
+}

@@ -1,0 +1,136 @@
+model Account {
+  address   String    @id @map("id") @db.VarChar(42)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  comments          Comment[]
+  signatureMessages SignatureMessage[]
+  tokens            Token[]
+  trades            Trade[]
+
+  @@map("accounts")
+}
+
+model Comment {
+  id             Int      @id @default(autoincrement())
+  tokenAddress   String   @map("token_id") @db.VarChar(42)
+  accountAddress String   @map("account_id") @db.VarChar(42)
+  text           String   @map("text") @db.VarChar(255)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  token   Token   @relation(fields: [tokenAddress], references: [address])
+  account Account @relation(fields: [accountAddress], references: [address])
+
+  @@map("comments")
+}
+
+enum SignatureMessageType {
+  SIGN_IN
+}
+
+model SignatureMessage {
+  id             String               @id @default(nanoid(15)) @map("id") @db.VarChar(15)
+  accountAddress String               @map("account_id") @db.VarChar(42)
+  type           SignatureMessageType @map("type")
+  message        String               @map("message") @db.VarChar(255)
+  createdAt      DateTime             @default(now()) @map("created_at")
+  expiredAt      DateTime             @map("expired_at")
+
+  account Account @relation(fields: [accountAddress], references: [address])
+
+  @@map("signature_messages")
+}
+
+model Token {
+  address            String    @id @map("id") @db.VarChar(42)
+  creatorAddress     String    @map("creator_id") @db.VarChar(42)
+  name               String    @map("name") @db.VarChar(255)
+  symbol             String    @map("symbol") @db.VarChar(255)
+  description        String    @map("description") @db.VarChar(255)
+  logoUrl            String    @map("logo_url") @db.VarChar(255)
+  websiteUrl         String?   @map("website_url") @db.VarChar(255)
+  totalSupply        Decimal   @map("total_supply") @db.Decimal(38, 18)
+  bondingCurveSupply Decimal   @map("bonding_curve_supply") @db.Decimal(38, 18)
+  ethReserve         Decimal   @map("eth_reserve") @db.Decimal(38, 18)
+  reserve            Decimal   @map("reserve") @db.Decimal(38, 18)
+  price              Decimal   @map("price") @db.Decimal(38, 18)
+  finalPrice         Decimal   @map("final_price") @db.Decimal(38, 18)
+  dexPoolAddress     String?   @map("dex_pool_address") @db.VarChar(42)
+  migratedAt         DateTime? @map("migrated_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime? @updatedAt @map("updated_at")
+
+  creator Account @relation(fields: [creatorAddress], references: [address])
+
+  comments       Comment[]
+  dexLiquidities DexLiquidity[]
+  socialMedia    SocialMedia[]
+  trades         Trade[]
+
+  @@map("tokens")
+}
+
+model SocialMedia {
+  tokenAddress String    @id @map("id") @db.VarChar(42)
+  telegramUrl  String?   @map("telegram_url") @db.VarChar(255)
+  discordUrl   String?   @map("discord_url") @db.VarChar(255)
+  xUrl         String?   @map("x_url") @db.VarChar(255)
+  facebookUrl  String?   @map("facebook_url") @db.VarChar(255)
+  instagramUrl String?   @map("instagram_url") @db.VarChar(255)
+  redditUrl    String?   @map("reddit_url") @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+
+  token Token @relation(fields: [tokenAddress], references: [address])
+
+  @@map("social_media")
+}
+
+model DexLiquidity {
+  tokenAddress   String   @id @map("id") @db.VarChar(42)
+  tokenId        Int      @map("token_id")
+  ethLiquidity   Decimal  @map("eth_liquidity") @db.Decimal(38, 18)
+  tokenLiquidity Decimal  @map("token_liquidity") @db.Decimal(38, 18)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  token Token @relation(fields: [tokenAddress], references: [address])
+
+  @@map("dex_liquidities")
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+model Trade {
+  id             String    @id
+  tokenAddress   String    @map("token_id") @db.VarChar(42)
+  accountAddress String    @map("account_id") @db.VarChar(42)
+  type           TradeType @map("type")
+  tokenAmount    Decimal   @map("token_amount") @db.Decimal(38, 18)
+  ethAmount      Decimal   @map("eth_amount") @db.Decimal(38, 18)
+  fee            Decimal   @map("fee") @db.Decimal(38, 18)
+  avgPrice       Decimal   @map("avg_price") @db.Decimal(38, 18)
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  token   Token   @relation(fields: [tokenAddress], references: [address])
+  account Account @relation(fields: [accountAddress], references: [address])
+
+  @@map("trades")
+}
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters", "relationJoins", "typedSql"]
+  binaryTargets   = ["darwin", "darwin-arm64", "linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
+  output          = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}

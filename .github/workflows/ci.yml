@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and lint
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17.5
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_URL: postgresql://postgres:postgres@localhost:5432/tokenzyme?schema=tokenzyme
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      # Proves the migrations apply cleanly to an empty database.
+      # The Prisma Client itself is committed under src/generated/prisma and is not
+      # regenerated here — its query engines are platform-specific, so a Linux run
+      # would always diff against the committed macOS build.
+      - name: Apply migrations
+        run: yarn prisma:migrate:deploy
+
+      - name: Build
+        run: yarn build
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Check formatting
+        run: yarn prettier --check './**/*.{ts,cts,mts,js,cjs,mjs,json,yml,yaml}'

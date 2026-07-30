@@ -1,0 +1,12 @@
+model Comment {
+  id             Int      @id @default(autoincrement())
+  tokenAddress   String   @map("token_id") @db.VarChar(42)
+  accountAddress String   @map("account_id") @db.VarChar(42)
+  text           String   @map("text") @db.VarChar(255)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  token   Token   @relation(fields: [tokenAddress], references: [address])
+  account Account @relation(fields: [accountAddress], references: [address])
+
+  @@map("comments")
+}

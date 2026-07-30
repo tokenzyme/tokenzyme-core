@@ -1,0 +1,21 @@
+enum TradeType {
+  BUY
+  SELL
+}
+
+model Trade {
+  id             String    @id
+  tokenAddress   String    @map("token_id") @db.VarChar(42)
+  accountAddress String    @map("account_id") @db.VarChar(42)
+  type           TradeType @map("type")
+  tokenAmount    Decimal   @map("token_amount") @db.Decimal(38, 18)
+  ethAmount      Decimal   @map("eth_amount") @db.Decimal(38, 18)
+  fee            Decimal   @map("fee") @db.Decimal(38, 18)
+  avgPrice       Decimal   @map("avg_price") @db.Decimal(38, 18)
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  token   Token   @relation(fields: [tokenAddress], references: [address])
+  account Account @relation(fields: [accountAddress], references: [address])
+
+  @@map("trades")
+}
