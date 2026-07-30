@@ -7004,10 +7004,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-bigint-patch@npm:0.0.8":
-  version: 0.0.8
-  resolution: "json-bigint-patch@npm:0.0.8"
-  checksum: 10c0/f2ee19607c4927d1b0f1fda2f3c3cdba1162d1a7f6a40ae5e3e034363cddd437a0ef48d975e1e572dc514a7396ab2247b443113444004f1e64af47ba298687b9
+"json-bigint-patch@npm:0.0.9":
+  version: 0.0.9
+  resolution: "json-bigint-patch@npm:0.0.9"
+  checksum: 10c0/44055ad436b4356eb2838b48e8a98118e23d616ffa7e51aecc87224d61ffc941eb3087f8e88c67922249f8ff32fdfff408f03b5e392acbbe6ac51558dac4b38d
   languageName: node
   linkType: hard
 
@@ -9390,7 +9390,7 @@ __metadata:
     fastify: "npm:5.4.0"
     graphql: "npm:16.11.0"
     graphql-scalars: "npm:1.24.2"
-    json-bigint-patch: "npm:0.0.8"
+    json-bigint-patch: "npm:0.0.9"
     lodash.escaperegexp: "npm:4.1.2"
     lodash.keyby: "npm:4.6.0"
     lodash.snakecase: "npm:4.1.1"
