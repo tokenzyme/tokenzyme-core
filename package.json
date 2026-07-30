@@ -40,8 +40,8 @@
     "@nestjs/platform-fastify": "11.1.6",
     "@nestjs/platform-socket.io": "11.1.6",
     "@nestjs/websockets": "11.1.6",
-    "@prisma/adapter-pg": "6.15.0",
-    "@prisma/client": "6.15.0",
+    "@prisma/adapter-pg": "7.9.1",
+    "@prisma/client": "7.9.1",
     "dataloader": "2.2.3",
     "dotenv": "17.2.1",
     "ethers": "6.15.0",
@@ -85,7 +85,7 @@
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-prettier": "5.5.4",
     "prettier": "3.6.2",
-    "prisma": "6.15.0",
+    "prisma": "7.9.1",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.9.2"
   }
