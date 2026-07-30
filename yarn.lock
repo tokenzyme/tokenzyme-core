@@ -6457,10 +6457,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:16.11.0":
-  version: 16.11.0
-  resolution: "graphql@npm:16.11.0"
-  checksum: 10c0/124da7860a2292e9acf2fed0c71fc0f6a9b9ca865d390d112bdd563c1f474357141501c12891f4164fe984315764736ad67f705219c62f7580681d431a85db88
+"graphql@npm:17.0.2":
+  version: 17.0.2
+  resolution: "graphql@npm:17.0.2"
+  checksum: 10c0/766546216b891439ed09fd8584963df2013e26f2f79f096036eaaa2788c38964e049c8a142d68e3afdabdd8bbe70042639e83f0f4b82edbc7c6850421f072bb6
   languageName: node
   linkType: hard
 
@@ -9388,7 +9388,7 @@ __metadata:
     eslint-plugin-prettier: "npm:5.5.4"
     ethers: "npm:6.15.0"
     fastify: "npm:5.4.0"
-    graphql: "npm:16.11.0"
+    graphql: "npm:17.0.2"
     graphql-scalars: "npm:1.24.2"
     json-bigint-patch: "npm:0.0.8"
     lodash.escaperegexp: "npm:4.1.2"
