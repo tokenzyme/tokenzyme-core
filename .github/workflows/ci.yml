@@ -35,7 +35,7 @@ jobs:
       DB_URL: postgresql://postgres:postgres@localhost:5432/tokenzyme?schema=tokenzyme
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Corepack must be enabled BEFORE setup-node: the `cache: yarn` option shells
       # out to `yarn cache dir` inside that step, and the runner's global Yarn 1
