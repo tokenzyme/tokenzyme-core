@@ -200,13 +200,16 @@ loads, connects, and shows nothing.
 
 | Network | Chain ID | Notes |
 | --- | --- | --- |
-| Sonic mainnet | 146 | The live deployment. |
+| Sonic mainnet | 146 | Where the stack was originally built and tested. |
 | Sonic testnet | 14601 | No DEX deployed — token migration cannot complete. |
 | Sonic Blaze testnet | 57054 | Legacy. Also no DEX. |
 | Local fork | 1337 | A Hardhat fork of mainnet. The only way to exercise migration end to end. |
 
-Deployed contract addresses are listed in the
-[contracts README](https://github.com/tokenzyme/tokenzyme-contracts#deployed-addresses).
+**There is no published deployment.** This project ships no contract addresses — you
+deploy the contracts yourself and point every service at your own launchpad proxy. See
+[Deploying](https://github.com/tokenzyme/tokenzyme-contracts#deploying) in the contracts
+repository, and [Network requirements](https://github.com/tokenzyme/tokenzyme-contracts#network-requirements)
+for what a target chain has to provide.
 
 Each service configures the network independently:
 
