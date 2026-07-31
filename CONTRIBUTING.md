@@ -74,21 +74,25 @@ yarn build    # compile to ./dist
 
 ### Database changes
 
-Core owns **only** its own tables — `comments`, `signature_messages`. The models for
-`Token`, `Trade`, `Account`, `SocialMedia` and `DexLiquidity` mirror tables the
-**indexer** creates and are read-only here.
+Core defines the **whole** database schema. Its migrations create every table — the
+ones core writes (`comments`, `signature_messages`) and the ones the indexer fills
+(`accounts`, `tokens`, `trades`, `social_media`, `dex_liquidities`). The indexer
+creates nothing; it writes rows into tables that already exist.
 
 ```bash
 yarn prisma:migrate              # create a migration and apply it
 yarn prisma:migrate:create-only  # create one without applying
 ```
 
-- Never write a migration that creates, alters or drops an indexer-owned table.
-- Never run `yarn prisma:migrate:reset` against a database the indexer is using.
-- Changing an indexer-owned model here means the change belongs in
+- Both services must resolve to the same schema, `public`. **Never add `?schema=` to
+  `DB_URL`** — Subsquid ignores it and always uses `public`, so setting it here makes
+  the two write to different schemas and every token query silently returns nothing.
+- Changing a table the indexer writes into means changing
   [`tokenzyme-indexer`](https://github.com/tokenzyme/tokenzyme-indexer)'s
-  `schema.graphql` first. The two are synchronized by hand and nothing warns you if
+  `schema.graphql` too. The two are synchronized by hand and nothing warns you if
   they drift — call it out explicitly in your PR.
+- Never run `yarn prisma:migrate:reset` against a database the indexer is using — it
+  drops the tables the indexer is writing into.
 - Commit the generated migration together with the schema change.
 
 ### Generated code
@@ -115,6 +119,30 @@ both until they regenerate. Flag any schema change in your PR description.
 This repository has no test suite. That is a gap, not a policy. A PR that
 establishes one — even covering a single service — is very welcome, and worth
 opening an issue to discuss the approach first.
+
+## Dependencies
+
+Dependabot opens **one grouped pull request per ecosystem, once a month**, containing
+every minor and patch bump. Review it, check CI, merge.
+
+**Major bumps are ignored by configuration and are the developer's job.** A major is a
+migration: bumping the version in the manifest does none of the work, it just turns the
+build red. When you want one, do it deliberately — read the upstream migration guide,
+change the code it requires, and land it as its own reviewed pull request:
+
+```bash
+yarn up <package>@<version>
+yarn build && yarn lint
+```
+
+Two things that still get through, on purpose or by accident:
+
+- **Security updates ignore this policy**, which is intended. If a vulnerability's only
+  fix is in a major, Dependabot proposes it regardless. Nothing merges itself — it
+  arrives as a pull request, CI runs on it, and a human decides.
+- **Packages below `1.0`.** Semver says any `0.x` bump may break, but Dependabot
+  classifies `0.20 -> 0.21` as a minor, so it lands in the grouped PR. Give those
+  entries a closer look than the rest.
 
 ## Review
 
