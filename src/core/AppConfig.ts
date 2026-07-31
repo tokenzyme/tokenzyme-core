@@ -32,6 +32,11 @@ export class AppConfig {
 
   public storageCdnUrl = this.getString('STORAGE_CDN_URL');
 
+  // Addressing style for the S3 API. AWS S3, Spaces and R2 serve virtual-hosted URLs
+  // (bucket.host/key), which is the default. MinIO and most self-hosted gateways only
+  // answer path-style (host/bucket/key) and need this turned on.
+  public storageForcePathStyle = this.getBoolean('STORAGE_FORCE_PATH_STYLE', false);
+
   public storageAccessKey = this.getString('STORAGE_ACCESS_KEY');
 
   public storageSecretKey = this.getString('STORAGE_SECRET_KEY');

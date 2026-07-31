@@ -16,7 +16,7 @@ export class StorageClient {
     this.s3Client = new S3Client({
       endpoint: appConfig.storageEndpoint,
       region: appConfig.storageRegion,
-      forcePathStyle: false,
+      forcePathStyle: appConfig.storageForcePathStyle,
       credentials: {
         accessKeyId: appConfig.storageAccessKey,
         secretAccessKey: appConfig.storageSecretKey,
