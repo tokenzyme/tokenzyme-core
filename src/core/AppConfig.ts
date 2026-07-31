@@ -5,6 +5,10 @@ export class AppConfig {
 
   public logPrisma = this.getBoolean('LOG_PRISMA', false);
 
+  // Port the HTTP server binds to. Configurable because 3000 is a crowded
+  // default — a second service on the same machine will collide with it.
+  public port = Number(this.getString('PORT', '3000'));
+
   // Origin allowed by CORS, e.g. "https://example.com". Required in production.
   // Empty in development, where any origin is accepted.
   public corsOrigin = this.nodeEnv === 'production' ? this.getString('CORS_ORIGIN') : this.getString('CORS_ORIGIN', '');

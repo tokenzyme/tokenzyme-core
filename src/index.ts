@@ -34,7 +34,7 @@ async function bootstrap(): Promise<void> {
       fileSize: 500 * 1024,
     },
   });
-  await app.listen({ host: '0.0.0.0', port: 3000 });
+  await app.listen({ host: '0.0.0.0', port: appConfig.port });
 }
 
 // eslint-disable-next-line no-void
