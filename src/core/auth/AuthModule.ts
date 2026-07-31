@@ -10,7 +10,7 @@ import { AppConfig } from '@core/AppConfig';
     JwtModule.registerAsync({
       useFactory: (appConfig: AppConfig) => ({
         secret: appConfig.jwtSecret,
-        signOptions: { expiresIn: appConfig.jwtExpiresIn },
+        signOptions: { expiresIn: appConfig.jwtExpiresIn * 24 * 60 * 60 },
       }),
       inject: [AppConfig],
     }),

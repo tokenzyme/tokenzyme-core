@@ -149,7 +149,7 @@ that need real values before the server will start:
 | --- | --- |
 | `DB_URL` | Must **not** carry a `?schema=` parameter — see above. |
 | `JWT_SECRET` | Generate with `openssl rand -base64 48`. |
-| `JWT_EXPIRES_IN` | e.g. `7d`. |
+| `JWT_EXPIRES_IN` | JWT lifetime in days, e.g. `7`. |
 | `RPC_URL` | Must match the network the indexer and clients use. |
 | `PRICE_FEED_ADDRESS` | Chainlink-compatible feed for the native token. |
 | `STORAGE_*` | Any S3-compatible provider — AWS S3, DigitalOcean Spaces, MinIO, Cloudflare R2. |

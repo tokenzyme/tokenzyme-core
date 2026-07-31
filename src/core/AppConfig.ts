@@ -7,7 +7,7 @@ export class AppConfig {
 
   // Port the HTTP server binds to. Configurable because 3000 is a crowded
   // default — a second service on the same machine will collide with it.
-  public port = Number(this.getString('PORT', '3000'));
+  public port = this.getNumber('PORT', 3000);
 
   // Origin allowed by CORS, e.g. "https://example.com". Required in production.
   // Empty in development, where any origin is accepted.
@@ -21,7 +21,8 @@ export class AppConfig {
 
   public jwtSecret = this.getString('JWT_SECRET');
 
-  public jwtExpiresIn = this.getString('JWT_EXPIRES_IN');
+  // JWT lifetime in days.
+  public jwtExpiresIn = this.getNumber('JWT_EXPIRES_IN');
 
   public storageBucket = this.getString('STORAGE_BUCKET');
 
@@ -49,6 +50,15 @@ export class AppConfig {
 
   private getBoolean(name: string, defaultValue?: boolean): boolean {
     return this.getProperty<boolean>(name, defaultValue) === 'true';
+  }
+
+  private getNumber(name: string, defaultValue?: number): number {
+    const value = this.getProperty<number>(name, defaultValue);
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) {
+      throw new Error(`Property "${name}" must be a number`);
+    }
+    return parsed;
   }
 
   private getProperty<T>(name: string, defaultValue?: T): string | T {
