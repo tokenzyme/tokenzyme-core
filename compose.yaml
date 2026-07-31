@@ -43,7 +43,7 @@ services:
       LOG_PRISMA: ${LOG_PRISMA}
       CORS_ORIGIN: ${CORS_ORIGIN}
       PORT: ${PORT}
-      DB_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@tokenzyme-postgres:5432/tokenzyme?schema=tokenzyme
+      DB_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@tokenzyme-postgres:5432/tokenzyme
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
       STORAGE_BUCKET: ${STORAGE_BUCKET}

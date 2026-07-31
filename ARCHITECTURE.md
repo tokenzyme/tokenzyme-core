@@ -68,9 +68,10 @@ clients.
                             ▼       │      │
                     ┌───────────────┴──┐   │
                     │    Postgres      │   │
+                    │   schema: public │   │
                     │                  │   │
-                    │ public.*     ←── indexer owns
-                    │ tokenzyme.*  ←── core owns
+                    │ schema defined by core's Prisma migrations;
+                    │ indexer only writes rows into it
                     └────────┬─────────┘   │
                       reads  │             │
                              ▼             │
@@ -121,30 +122,27 @@ indexer until its ABI copy is regenerated. See
 
 ## The shared database
 
-**The indexer and core share one Postgres database, split by schema.**
+**The indexer and core share one Postgres database, and one schema: `public`.**
 
-| Schema | Owned by | Tables |
-| --- | --- | --- |
-| `public` | indexer | `accounts`, `tokens`, `trades`, `social_media`, `dex_liquidities` |
-| `tokenzyme` | core | `comments`, `signature_messages` |
+**Core owns the entire schema.** Its Prisma migrations create every table — both the
+ones it writes itself (`comments`, `signature_messages`) and the ones the indexer
+fills (`accounts`, `tokens`, `trades`, `social_media`, `dex_liquidities`).
 
-The indexer creates its tables through TypeORM on first run. Core creates its own
-through Prisma migrations. **Neither migrates the other's tables.**
+**The indexer migrates nothing.** It writes rows into tables that already exist. So
+core's migrations must be applied *before* the indexer starts, or it has nowhere to
+write.
 
-Core mirrors the indexer's tables in its Prisma schema so it can query and join them
-— but it only ever reads them. Those Prisma models have no migrations behind them;
-they describe tables that already exist.
+Three consequences worth internalising:
 
-Two consequences worth internalising:
-
-- The two schemas are kept in sync **by hand**. Change `schema.graphql` in the
-  indexer and you must mirror it in core's `prisma/models/`. Nothing will warn you
-  if they drift; you will find out through a runtime error.
-- Point the two services at different databases and core will start fine, but every
-  token query will come back empty.
-
-`DB_URL` differs accordingly: core's ends in `?schema=tokenzyme`, the indexer's has
-no schema parameter at all.
+- **Never put `?schema=` in core's `DB_URL`.** Prisma targets whatever that parameter
+  names, defaulting to `public`. Subsquid ignores the parameter entirely and always
+  uses `public`. Set it on core and the two services quietly write to different
+  schemas: core starts fine, and every token query comes back empty.
+- The indexer's `schema.graphql` and core's `prisma/models/` describe the same
+  tables and are kept in sync **by hand**. Nothing warns you if they drift; you find
+  out through a runtime error.
+- Point the two services at different databases and you get the same silent
+  emptiness.
 
 ## Code generation and coupling
 
@@ -259,7 +257,23 @@ yarn contracts:deploy:fork        # in another terminal — note the launchpad p
 which populates the TypeChain bindings in core and app. Do this before building
 either of them.
 
-**3. Indexer**
+**3. Core — migrations first**
+
+Core defines the whole database schema, including the tables the indexer writes into,
+so its migrations must run **before** the indexer starts.
+
+```bash
+cd tokenzyme-core
+yarn && cp .env.template .env
+# set DB_URL, JWT_SECRET, RPC_URL, PRICE_FEED_ADDRESS, STORAGE_*
+# DB_URL must NOT carry a ?schema= parameter
+yarn prisma:migrate
+yarn start:dev
+```
+
+GraphQL is at `http://localhost:3000/graphql`.
+
+**4. Indexer**
 
 ```bash
 cd tokenzyme-indexer
@@ -268,20 +282,8 @@ yarn && cp .env.template .env
 yarn start:dev
 ```
 
-It creates its own tables and starts backfilling. Wait for it to catch up before
-expecting the API to return anything.
-
-**4. Core**
-
-```bash
-cd tokenzyme-core
-yarn && cp .env.template .env
-# set DB_URL, JWT_SECRET, RPC_URL, PRICE_FEED_ADDRESS, STORAGE_*
-yarn prisma:migrate
-yarn start:dev
-```
-
-GraphQL is at `http://localhost:3000/graphql`.
+It writes into the tables core just created and starts backfilling. Wait for it to
+catch up before expecting the API to return anything.
 
 **5. App**
 

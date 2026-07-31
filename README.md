@@ -97,29 +97,29 @@ query builder cannot express efficiently.
 
 This is the part that surprises people, so it is worth stating plainly.
 
-**Core and the indexer share one Postgres database, split by schema.**
+**Core and the indexer share one Postgres database, and one schema: `public`.**
 
-| Schema | Owned by | Tables |
-| --- | --- | --- |
-| `public` | indexer | `accounts`, `tokens`, `trades`, `social_media`, `dex_liquidities` |
-| `tokenzyme` | core | `comments`, `signature_messages` |
+**Core owns the whole schema.** The migrations here create every table — both the
+ones core writes (`comments`, `signature_messages`) and the ones the indexer fills
+(`accounts`, `tokens`, `trades`, `social_media`, `dex_liquidities`). Core writes only
+to its own, but it defines all of them, so `prisma/models/` is the single description
+of the database.
 
-Core mirrors the indexer's tables in `prisma/models/` so it can query and join them,
-but **only reads them**. Those models have no migrations behind them — they describe
-tables TypeORM already created on the indexer's side. Core's migrations create only
-its own tables.
+The indexer creates nothing. Apply these migrations **before** starting it, or it has
+nowhere to write.
 
 Consequences:
 
-- The two schemas are kept in sync **by hand**. Change `schema.graphql` in the
-  indexer and you must mirror it in `prisma/models/`. Nothing warns you if they
-  drift.
-- Point the two services at different databases and core starts fine, but every
+- **Never add `?schema=` to `DB_URL`.** Prisma targets whatever it names, defaulting
+  to `public`. Subsquid ignores the parameter and always uses `public`. Set it here
+  and the two services quietly use different schemas: core starts fine, and every
   token query returns nothing.
-- **Never run `yarn prisma:migrate:reset` against a database the indexer is using.**
-
-That is why `DB_URL` here ends in `?schema=tokenzyme` while the indexer's has no
-schema parameter.
+- The indexer's `schema.graphql` and `prisma/models/` describe the same tables and
+  are kept in sync **by hand**. Nothing warns you if they drift.
+- Point the two services at different databases and you get the same silent
+  emptiness.
+- **Never run `yarn prisma:migrate:reset` against a database the indexer is using** —
+  it drops the tables the indexer is writing into.
 
 ## Getting started
 
@@ -138,7 +138,7 @@ yarn
 # Copy the environment template and fill it in
 cp .env.template .env
 
-# Create core's own tables
+# Create the database schema — do this before starting the indexer
 yarn prisma:migrate
 ```
 
@@ -147,7 +147,7 @@ that need real values before the server will start:
 
 | Variable | Notes |
 | --- | --- |
-| `DB_URL` | Include `?schema=tokenzyme`. |
+| `DB_URL` | Must **not** carry a `?schema=` parameter — see above. |
 | `JWT_SECRET` | Generate with `openssl rand -base64 48`. |
 | `JWT_EXPIRES_IN` | e.g. `7d`. |
 | `RPC_URL` | Must match the network the indexer and clients use. |

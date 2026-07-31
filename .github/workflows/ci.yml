@@ -32,7 +32,7 @@ jobs:
           --health-retries 5
 
     env:
-      DB_URL: postgresql://postgres:postgres@localhost:5432/tokenzyme?schema=tokenzyme
+      DB_URL: postgresql://postgres:postgres@localhost:5432/tokenzyme
 
     steps:
       - uses: actions/checkout@v4
